@@ -6,13 +6,13 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/kosti/CLionProjects/project/./constants.h
+/home/kostas/project/./constants.h
 
-C:/Users/kosti/CLionProjects/project/main.cpp
+/home/kostas/project/main.cpp
 iostream
 -
 getopt.h
 -
 ./constants.h
-C:/Users/kosti/CLionProjects/project/./constants.h
+/home/kostas/project/./constants.h
 

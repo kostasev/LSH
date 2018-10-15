@@ -5,14 +5,16 @@
 using namespace std;
 
 int main(int argc,char** argv) {
-    string inputfd, queryfd, outputfd="" ;
+    string inputfd, queryfd, outputfd="";
+    bool read_query;
     int c;
     int k=-1;
     int L=-1;
 
     /* Reading Arguments from command line */
 
-    while(( c = getopt(argc,argv,"d:q:k:L:o:"))){
+    while(( c = getopt(argc,argv,"d:q:k:L:o:")) !=-1 ){
+
         switch (c) {
             case 'd':
                 inputfd = optarg;
@@ -30,20 +32,20 @@ int main(int argc,char** argv) {
                 outputfd = optarg;
                 break;
             case '?':
-                if (optopt == 'c')
-                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-                else if (isprint (optopt))
-                    fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-                else
-                    fprintf (stderr,
-                             "Unknown option character `\\x%x'.\n", optopt);
+                cerr << "Unknown option character " << char(optopt) << endl;
                 return 1;
+            default:
+                abort();
         }
+    }
+    if (inputfd.size()==0) {
+        cerr << "Data file was not defined!" << endl ;
     }
     if (k==-1) k=const_lsh::k;
     if (L==-1) L=const_lsh::L;
+    if (queryfd.size()==0) read_query=true;
     if (outputfd.size()==0) outputfd = "./output.txt";
-    cout<< "aaaa";
+
     cout << "L: " << L << endl;
     cout << "k: " << k << endl;
     cout << "in: " << inputfd  << endl;
