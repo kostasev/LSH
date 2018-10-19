@@ -12,11 +12,14 @@ int num_columns(string line) {
     for(int i=0;i<line.size(); i++){
         if ((isspace(line[i]))&&(!isspace(prev))){
             words++;
-        } else {
-            prev = line[i];
         }
+        prev = line[i];
     }
-    return words+1;
+   if (!isspace(prev)) {
+        words += 1;
+    }
+    cout << "IS: " << isspace('\n') << " " << prev <<endl;
+    return words;
 }
 
 int main(int argc, char** argv) {
