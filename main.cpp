@@ -1,26 +1,15 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <vector>
+#include <unordered_map>
 #include <getopt.h>
 #include "./constants.h"
+#include "./utilities.h"
+#include "./Key.h"
+#include "Hash_table.h"
 
 using namespace std;
-
-int num_columns(string line) {
-    char prev=' ';
-    int words=0;
-    for(int i=0;i<line.size(); i++){
-        if ((isspace(line[i]))&&(!isspace(prev))){
-            words++;
-        }
-        prev = line[i];
-    }
-   if (!isspace(prev)) {
-        words += 1;
-    }
-    cout << "IS: " << isspace('\n') << " " << prev <<endl;
-    return words;
-}
 
 int main(int argc, char** argv) {
     string input="", query="", output="";
@@ -31,7 +20,6 @@ int main(int argc, char** argv) {
     int L=-1;
 
     /* Reading Arguments from command line */
-
     while(( c = getopt(argc,argv,"d:q:k:L:o:f:h")) !=-1 ){
         switch (c) {
             case 'd':
@@ -105,5 +93,46 @@ int main(int argc, char** argv) {
     cout << "d: " << d << endl;
     cout << "num lines: " << num_lines << endl;
 
+    Hash_table ht = Hash_table(num_lines/const_lsh::table_size);
+
+
+
+
+
+    unordered_map<Key,string> hash_tb;
+    Key a ,b , c1, d1;
+    a.dim = { 1 , 2 , 3};
+    hash_tb[a]="item1";
+    b.dim = { 1 , 2 , 4};
+    hash_tb[b]="item2";
+    c1.dim = { 1 , 2 , 5};
+    hash_tb[c1]="item3";
+    d1.dim = { 1 , 2 , 6};
+    hash_tb[d1]="item4";
+
+    for ( auto ii = hash_tb.begin() ; ii != hash_tb.end() ; ii++ )
+        cout << ii->first.dim.size()
+             << " "
+             << ii->second
+             << endl
+             << endl;
+
+
+    cout << "Number of buckets: " << hash_tb.bucket_count() << endl;
+    cout << "Number of  Max buckets: " << hash_tb.max_bucket_count() << endl;
+    cout << "Hash table size: " << hash_tb.size() << endl;
+    for (unsigned i=0; i<hash_tb.bucket_count(); i++) {
+        std::cout << "bucket #" << i << " has " << hash_tb.bucket_size(i) << " elements.\n";
+    }
+
+    size_t pos = hash_tb.bucket(d1);
+    for ( auto ii = hash_tb.begin(pos) ; ii != hash_tb.end(pos) ; ii++ )
+        cout << ii->first.dim.size()
+             << " "
+             << ii->second
+             << endl
+             << endl;
+
     return 0;
+
 }

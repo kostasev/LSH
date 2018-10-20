@@ -3,4 +3,4 @@ project(untitled)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(untitled main.cpp constants.h)
+add_executable(untitled main.cpp constants.h utilities.cpp utilities.h Hash_table.cpp Hash_table.h Key.h)
