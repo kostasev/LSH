@@ -24,7 +24,7 @@ struct Key {
     }
 };
 
-namespace std {
+/*namespace std {
     template <>
     struct hash<Key>{
         size_t operator()(const Key &k) const {
@@ -36,6 +36,6 @@ namespace std {
             return (sum % 2);
         }
     };
-}
+}*/
 
 #endif //UNTITLED_KEY_H

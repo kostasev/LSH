@@ -39,6 +39,9 @@ int main(int argc, char** argv) {
                 break;
             case 'f':
                 func_name = optarg;
+                if ((func_name != "cosine") || (func_name!="euclidean")) {
+                    cerr << "Invalid function name" << endl;
+                }
                 break;
             case 'h':
                 cout << "\nlsh - Locality Sensitive Hashing\n" << endl <<
@@ -93,14 +96,19 @@ int main(int argc, char** argv) {
     cout << "d: " << d << endl;
     cout << "num lines: " << num_lines << endl;
 
-    Hash_table ht = Hash_table(num_lines/const_lsh::table_size);
-
-
-
-
-
-    unordered_map<Key,string> hash_tb;
+    Hash_table ht = Hash_table(num_lines/const_lsh::table_size,func_name);
     Key a ,b , c1, d1;
+    a.dim = { 1 , 2 , 3};
+    b.dim = { 1 , 2 , 4};
+    c1.dim = { 1 , 2 , 5};
+    d1.dim = { 1 , 2 , 6};
+    ht.add_item(a,"item1");
+    ht.add_item(b,"item2");
+    ht.add_item(c1,"item3");
+    ht.add_item(d1,"item4");
+
+    //unordered_map<Key,string> hash_tb;
+    /*Key a ,b , c1, d1;
     a.dim = { 1 , 2 , 3};
     hash_tb[a]="item1";
     b.dim = { 1 , 2 , 4};
@@ -108,30 +116,9 @@ int main(int argc, char** argv) {
     c1.dim = { 1 , 2 , 5};
     hash_tb[c1]="item3";
     d1.dim = { 1 , 2 , 6};
-    hash_tb[d1]="item4";
-
-    for ( auto ii = hash_tb.begin() ; ii != hash_tb.end() ; ii++ )
-        cout << ii->first.dim.size()
-             << " "
-             << ii->second
-             << endl
-             << endl;
+    hash_tb[d1]="item4";*/
 
 
-    cout << "Number of buckets: " << hash_tb.bucket_count() << endl;
-    cout << "Number of  Max buckets: " << hash_tb.max_bucket_count() << endl;
-    cout << "Hash table size: " << hash_tb.size() << endl;
-    for (unsigned i=0; i<hash_tb.bucket_count(); i++) {
-        std::cout << "bucket #" << i << " has " << hash_tb.bucket_size(i) << " elements.\n";
-    }
-
-    size_t pos = hash_tb.bucket(d1);
-    for ( auto ii = hash_tb.begin(pos) ; ii != hash_tb.end(pos) ; ii++ )
-        cout << ii->first.dim.size()
-             << " "
-             << ii->second
-             << endl
-             << endl;
 
     return 0;
 
