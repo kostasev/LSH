@@ -11,6 +11,7 @@ using namespace std;
 
 struct Key {
     vector<int> dim ;
+    long int hash_val;
 
     bool operator==(const Key& lhs) const
     {
@@ -24,18 +25,13 @@ struct Key {
     }
 };
 
-/*namespace std {
+namespace std {
     template <>
     struct hash<Key>{
         size_t operator()(const Key &k) const {
-            int sum = 0;
-            for (int i = 0; i < k.dim.size(); i++) {
-                sum += k.dim[i];
-            }
-            cout << "Hash is: " << (sum % 2) << " of sum: " << sum << endl;
-            return (sum % 2);
+            return k.hash_val;
         }
     };
-}*/
+}
 
 #endif //UNTITLED_KEY_H

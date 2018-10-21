@@ -10,6 +10,7 @@
 namespace const_lsh {
     const int k = 4;
     const int L = 5;
+    const int w = 4;
     const int table_size = 4;
     const std::string def_func = "euclidean";
 }

@@ -4,26 +4,31 @@
 
 #include "Hash_table.h"
 
-Hash_table::Hash_table( int buck , string func){
+Hash_table::Hash_table( int buck, int dimension, int k, string func){
+    this->k=k;
+    this->d=dimension;
     hash_tb.rehash(buck);
-    cout <<"CLASS BUCK COUNT_" << hash_tb.bucket_count() << endl;
+    if (func == "euclidean") {
+        hfunc = new hash_func(dimension, k);
+    }
 }
 Hash_table::~Hash_table() {
 }
 
-void Hash_table::add_item(Key k,string name){
-    hash_tb[k]=name;
+void Hash_table::add_item(string name,Key k){
+    k.hash_val=this->hfunc->hash_value(k,this->k);
+    this->hash_tb[name]=k;
 }
 
-vector<Key,string> Hash_table::get_bucket_of(Key k){
-    size_t pos = hash_tb.bucket(k);
+/*vector<string,Key> Hash_table::get_bucket_of(string name){
+    size_t pos = hash_tb.bucket(name);
     for ( auto ii = hash_tb.begin(pos) ; ii != hash_tb.end(pos) ; ii++ )
-        cout << ii->first.dim.size()
+        cout << ii->first
              << " "
-             << ii->second
+             << ii->second.dim.size()
              << endl
              << endl;
-}
+}*/
 
 void Hash_table::print_stats(){
     cout << "Number of buckets: " << hash_tb.bucket_count() << endl;

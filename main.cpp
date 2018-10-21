@@ -96,17 +96,18 @@ int main(int argc, char** argv) {
     cout << "d: " << d << endl;
     cout << "num lines: " << num_lines << endl;
 
-    Hash_table ht = Hash_table(num_lines/const_lsh::table_size,func_name);
+    Hash_table ht = Hash_table(num_lines/const_lsh::table_size, d, k, func_name);
     Key a ,b , c1, d1;
-    a.dim = { 1 , 2 , 3};
-    b.dim = { 1 , 2 , 4};
-    c1.dim = { 1 , 2 , 5};
-    d1.dim = { 1 , 2 , 6};
-    ht.add_item(a,"item1");
-    ht.add_item(b,"item2");
-    ht.add_item(c1,"item3");
-    ht.add_item(d1,"item4");
+    a = {{ 1 , 2 , 3},0};
+    b = {{ 1 , 2 , 4},0};
+    c1 = {{ 1 , 2 , 5},0};
+    d1 = {{ 1 , 2 , 6},0};
+    ht.add_item("item1",a);
+    ht.add_item("item2",b);
+    ht.add_item("item3",c1);
+    ht.add_item("item4",d1);
 
+    ht.print_stats();
     //unordered_map<Key,string> hash_tb;
     /*Key a ,b , c1, d1;
     a.dim = { 1 , 2 , 3};

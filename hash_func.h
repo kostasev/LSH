@@ -13,13 +13,12 @@ using namespace std;
 
 class hash_func {
 private:
-    vector<float> t;
     vector<int> r;
     vector<vector<float>> v;
 public:
-    hash_func();
+    hash_func(int,int);
     ~hash_func();
-    int hash_value(Key);
+    long int hash_value(Key&,int);
 };
 
 
