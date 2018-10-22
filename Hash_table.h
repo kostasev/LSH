@@ -9,18 +9,17 @@
 #include "./Key.h"
 #include "./hash_func.h"
 
-using namespace std;
 
 class Hash_table {
 private:
     int d;
     int k;
     hash_func *hfunc;
-    unordered_map<string,Key> hash_tb;
+    std::unordered_map<Key,std::string> hash_tb;
 public:
-    Hash_table(int, int, int, string);
+    Hash_table(int, int, int, std::string);
     ~Hash_table();
-    void add_item( string ,Key );
+    void add_item(std::string ,Key );
     //vector<string,Key> get_bucket_of(string);
     void print_stats();
 };

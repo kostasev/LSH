@@ -8,13 +8,10 @@
 #include <vector>
 #include "Key.h"
 
-using namespace std;
-
-
 class hash_func {
 private:
-    vector<int> r;
-    vector<vector<float>> v;
+    std::vector<int> r;
+    std::vector<std::vector<float>> v;
 public:
     hash_func(int,int);
     ~hash_func();

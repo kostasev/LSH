@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <getopt.h>
+#include <cstring>
 #include "./constants.h"
 #include "./utilities.h"
 #include "./Key.h"
@@ -97,15 +98,35 @@ int main(int argc, char** argv) {
     cout << "num lines: " << num_lines << endl;
 
     Hash_table ht = Hash_table(num_lines/const_lsh::table_size, d, k, func_name);
-    Key a ,b , c1, d1;
-    a = {{ 1 , 2 , 3},0};
-    b = {{ 1 , 2 , 4},0};
-    c1 = {{ 1 , 2 , 5},0};
-    d1 = {{ 1 , 2 , 6},0};
-    ht.add_item("item1",a);
-    ht.add_item("item2",b);
-    ht.add_item("item3",c1);
-    ht.add_item("item4",d1);
+    ht.print_stats();
+    inputfd.open (input);
+    vector<int> xx;
+    char cc[1024] ;
+    string name;
+    for (int i=0 ; i< num_lines; i++) {
+        getline(inputfd,line);
+        strncpy(cc,line.c_str(),d*sizeof(int));
+        char *pch = strtok (cc ," \t");
+        while (pch != NULL)
+        {
+            xx.push_back(atoi(pch));
+            pch = strtok (NULL, " \t");
+        }
+        if (xx.size()==128){
+            cout << i ;
+        }
+        else{
+            cout << "fail" ;
+            return 0;
+        }
+        cout << endl;
+        name = "item_" + to_string(i);
+        cout << name <<endl;
+        ht.add_item(name,{xx,0});
+        xx.clear();
+
+    }
+
 
     ht.print_stats();
     //unordered_map<Key,string> hash_tb;

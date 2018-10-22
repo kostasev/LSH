@@ -7,10 +7,8 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
 struct Key {
-    vector<int> dim ;
+    std::vector<int> dim ;
     long int hash_val;
 
     bool operator==(const Key& lhs) const
@@ -23,15 +21,19 @@ struct Key {
         }
         return true;
     }
+
+
 };
 
 namespace std {
-    template <>
-    struct hash<Key>{
+    template<>
+    struct hash<Key> {
         size_t operator()(const Key &k) const {
+            cout << "THE REAL " << k.hash_val << endl;
             return k.hash_val;
         }
     };
-}
+};
+
 
 #endif //UNTITLED_KEY_H

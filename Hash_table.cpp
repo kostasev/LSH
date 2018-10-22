@@ -4,10 +4,12 @@
 
 #include "Hash_table.h"
 
-Hash_table::Hash_table( int buck, int dimension, int k, string func){
+
+Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
     this->k=k;
     this->d=dimension;
     hash_tb.rehash(buck);
+    hash_tb.max_load_factor(100);
     if (func == "euclidean") {
         hfunc = new hash_func(dimension, k);
     }
@@ -15,9 +17,9 @@ Hash_table::Hash_table( int buck, int dimension, int k, string func){
 Hash_table::~Hash_table() {
 }
 
-void Hash_table::add_item(string name,Key k){
-    k.hash_val=this->hfunc->hash_value(k,this->k);
-    this->hash_tb[name]=k;
+void Hash_table::add_item(std::string name,Key k){
+    this->hfunc->hash_value(k,this->k);
+    this->hash_tb[k]=name;
 }
 
 /*vector<string,Key> Hash_table::get_bucket_of(string name){
@@ -31,9 +33,9 @@ void Hash_table::add_item(string name,Key k){
 }*/
 
 void Hash_table::print_stats(){
-    cout << "Number of buckets: " << hash_tb.bucket_count() << endl;
-    cout << "Number of  Max buckets: " << hash_tb.max_bucket_count() << endl;
-    cout << "Hash table size: " << hash_tb.size() << endl;
+    std::cout << "Number of buckets: " << hash_tb.bucket_count() << std::endl;
+    std::cout << "Number of  Max buckets: " << hash_tb.max_bucket_count() << std::endl;
+    std::cout << "Hash table size: " << hash_tb.size() << std::endl;
     for (unsigned i=0; i<hash_tb.bucket_count(); i++) {
         std::cout << "bucket #" << i << " has " << hash_tb.bucket_size(i) << " elements.\n";
     }

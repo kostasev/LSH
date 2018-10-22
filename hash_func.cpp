@@ -10,7 +10,7 @@
 hash_func::hash_func(int dimension, int k){
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(0.0,1.0);
-    vector<float> temp(dimension);
+    std::vector<float> temp(dimension);
     this->v.resize(k);
     for(int i=0 ; i < k ; i++ ) {
         this->r.push_back(rand()%SHRT_MAX);
@@ -35,7 +35,7 @@ long int hash_func::hash_value(Key& k,int size){
         h=h/const_lsh::w;
         sum+=h;
     }
-    k.hash_val=sum;
-    cout << "This the hash: " << sum << endl;
-    return sum;
+    k.hash_val=((sum%INT_MAX)%250);
+    std::cout << "This the hash: " << k.hash_val << std::endl;
+    return k.hash_val;
 }
