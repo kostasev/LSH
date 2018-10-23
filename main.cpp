@@ -16,12 +16,12 @@ int main(int argc, char** argv) {
     string input="", query="", output="";
     string func_name = "";
     bool read_query;
-    int c;
+    int c,R=400;
     int k=-1;
     int L=-1;
 
     /* Reading Arguments from command line */
-    while(( c = getopt(argc,argv,"d:q:k:L:o:f:h")) !=-1 ){
+    while(( c = getopt(argc,argv,"d:q:k:L:o:f:h:R")) !=-1 ){
         switch (c) {
             case 'd':
                 input = optarg;
@@ -37,6 +37,9 @@ int main(int argc, char** argv) {
                 break;
             case 'o':
                 output = optarg;
+                break;
+            case 'R':
+                R = atoi(optarg);
                 break;
             case 'f':
                 func_name = optarg;
@@ -122,6 +125,26 @@ int main(int argc, char** argv) {
     inputfd.close();
 
     ht.print_stats();
+
+
+    ifstream queryfd;
+    queryfd.open(query);
+
+    while (!queryfd.eof()) {
+        getline(queryfd,line);
+        strncpy(cc,line.c_str(),d*sizeof(int));
+        char *pch = strtok (cc ," \t");
+        while (pch != NULL)
+        {
+            xx.push_back(atoi(pch));
+            pch = strtok (NULL, " \t");
+        }
+        temp[]=ht.get_bucket({xx,0});
+        neighboors.concat(temp);
+        print_query_summary(xx,name,neighboors);
+        xx.clear();
+    }
+
     //unordered_map<Key,string> hash_tb;
     /*Key a ,b , c1, d1;
     a.dim = { 1 , 2 , 3};
