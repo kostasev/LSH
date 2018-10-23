@@ -98,6 +98,10 @@ int main(int argc, char** argv) {
     cout << "num lines: " << num_lines << endl;
 
     Hash_table ht = Hash_table(num_lines/const_lsh::table_size, d, k, func_name);
+    /*vector <Hash_table> tables ;
+    for (int i=0; i<L ; i++){
+        tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
+    }*/
     ht.print_stats();
     inputfd.open (input);
     vector<int> xx;
@@ -112,21 +116,10 @@ int main(int argc, char** argv) {
             xx.push_back(atoi(pch));
             pch = strtok (NULL, " \t");
         }
-        if (xx.size()==128){
-            cout << i ;
-        }
-        else{
-            cout << "fail" ;
-            return 0;
-        }
-        cout << endl;
-        name = "item_" + to_string(i);
-        cout << name <<endl;
-        ht.add_item(name,{xx,0});
+        ht.add_item(name,{xx,0},num_lines/const_lsh::table_size);
         xx.clear();
-
     }
-
+    inputfd.close();
 
     ht.print_stats();
     //unordered_map<Key,string> hash_tb;

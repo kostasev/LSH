@@ -11,7 +11,7 @@ namespace const_lsh {
     const int k = 4;
     const int L = 5;
     const int w = 4;
-    const int table_size = 4;
+    const int table_size = 2;
     const std::string def_func = "euclidean";
 }
 #endif //UNTITLED_CONSTANTS_H

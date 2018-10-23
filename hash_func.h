@@ -12,10 +12,11 @@ class hash_func {
 private:
     std::vector<int> r;
     std::vector<std::vector<float>> v;
+    std::vector<float> t;
 public:
     hash_func(int,int);
     ~hash_func();
-    long int hash_value(Key&,int);
+    long int hash_value(Key&,int,int);
 };
 
 

@@ -19,7 +19,7 @@ private:
 public:
     Hash_table(int, int, int, std::string);
     ~Hash_table();
-    void add_item(std::string ,Key );
+    void add_item(std::string ,Key,int);
     //vector<string,Key> get_bucket_of(string);
     void print_stats();
 };

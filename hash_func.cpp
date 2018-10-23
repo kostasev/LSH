@@ -13,7 +13,8 @@ hash_func::hash_func(int dimension, int k){
     std::vector<float> temp(dimension);
     this->v.resize(k);
     for(int i=0 ; i < k ; i++ ) {
-        this->r.push_back(rand()%SHRT_MAX);
+        this->r.push_back(rand()%9999);
+        this->t.push_back(static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/const_lsh::w)));
         for(int j=0 ; j < dimension ; j++ ){
             temp[j]=distribution(generator);
         }
@@ -22,20 +23,20 @@ hash_func::hash_func(int dimension, int k){
 }
 hash_func::~hash_func(){}
 
-long int hash_func::hash_value(Key& k,int size){
+long int hash_func::hash_value(Key& k,int size,int table_size){
     long int sum=0;
     double h=0.0;
-    float r2;
     for(int j=0; j<size; j++){
         for (int i=0; i<k.dim.size(); i++){
             h+=this->v[j][i]*k.dim[i];
         }
-        r2 = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/const_lsh::w));
-        h+=r2;
+        h+=this->t[j];
         h=h/const_lsh::w;
+        h*=this->r[j];
         sum+=h;
+        h=0.0;
     }
-    k.hash_val=((sum%INT_MAX)%250);
+    k.hash_val=(((sum%INT_MAX)%table_size)+table_size)%table_size;
     std::cout << "This the hash: " << k.hash_val << std::endl;
     return k.hash_val;
 }
