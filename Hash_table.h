@@ -8,6 +8,7 @@
 #include <iostream>
 #include "./Key.h"
 #include "./hash_func.h"
+#include "data_point.h"
 
 
 class Hash_table {
@@ -20,7 +21,8 @@ public:
     Hash_table(int, int, int, std::string);
     ~Hash_table();
     void add_item(std::string ,Key,int);
-    //vector<string,Key> get_bucket_of(string);
+    //vector<string,Key> get_bucket(string);
+    std::vector<data_point> get_bucket(Key);
     void print_stats();
 };
 

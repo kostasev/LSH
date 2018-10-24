@@ -5,10 +5,13 @@
 #include <unordered_map>
 #include <getopt.h>
 #include <cstring>
+#include <numeric>
+#include <cmath>
 #include "./constants.h"
 #include "./utilities.h"
 #include "./Key.h"
 #include "Hash_table.h"
+#include "./data_point.h"
 
 using namespace std;
 
@@ -124,14 +127,13 @@ int main(int argc, char** argv) {
     }
     inputfd.close();
 
-    ht.print_stats();
+    //ht.print_stats();
 
 
     ifstream queryfd;
     queryfd.open(query);
-
-    while (!queryfd.eof()) {
-        getline(queryfd,line);
+    vector<data_point> neighboors,temp;
+    while (getline(queryfd,line)) {
         strncpy(cc,line.c_str(),d*sizeof(int));
         char *pch = strtok (cc ," \t");
         while (pch != NULL)
@@ -139,9 +141,22 @@ int main(int argc, char** argv) {
             xx.push_back(atoi(pch));
             pch = strtok (NULL, " \t");
         }
-        temp[]=ht.get_bucket({xx,0});
-        neighboors.concat(temp);
-        print_query_summary(xx,name,neighboors);
+        temp = ht.get_bucket({xx,0});
+        cout << "size: " << temp.size();
+        neighboors.insert(neighboors.end(),temp.begin(),temp.end());
+        for(int z=0;z<temp.size();z++){
+            cout << "size: " << temp.size();
+            for(int x=0;x<temp.size();x++){
+                cout << temp[z].k.dim[x] << " ";
+                //cout << neighboors[z].k.dim[x] << " ";
+            }
+            cout << endl << endl;
+        }
+        double result;
+        for (int z=0;z<neighboors.size();z++){
+            result = std::sqrt(std::inner_product(begin(xx), end(xx), begin(neighboors[z].k.dim), 0));
+            cout <<"result: "<< result;
+        }
         xx.clear();
     }
 

@@ -22,15 +22,17 @@ void Hash_table::add_item(std::string name,Key k,int tb_size){
     this->hash_tb[k]=name;
 }
 
-/*vector<string,Key> Hash_table::get_bucket_of(string name){
-    size_t pos = hash_tb.bucket(name);
-    for ( auto ii = hash_tb.begin(pos) ; ii != hash_tb.end(pos) ; ii++ )
-        cout << ii->first
+std::vector<data_point> Hash_table::get_bucket(Key k){
+    size_t pos = this->hash_tb.equal_range({k,0});
+    std::vector<data_point> bucks;
+    for ( auto ii = hash_tb.begin(pos) ; ii != hash_tb.end(pos) ; ii++ ){
+        std::cout << ii->first.dim.size()
              << " "
-             << ii->second.dim.size()
-             << endl
-             << endl;
-}*/
+             << ii->second;
+        bucks.push_back({ii->first,ii->second});
+    }
+    return bucks;
+}
 
 void Hash_table::print_stats(){
     std::cout << "Number of buckets: " << hash_tb.bucket_count() << std::endl;
