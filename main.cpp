@@ -13,6 +13,10 @@
 #include "Hash_table.h"
 #include "./data_point.h"
 
+void get_data_lenghts(std::string, int&, int&);
+
+void feed_data_set(std::string, data_point<int>* , int);
+
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -83,22 +87,13 @@ int main(int argc, char** argv) {
     cout << "ou: " << output << endl;
     cout << "fn: " << func_name << endl;
 
-    ifstream inputfd;
-    string line;
     int num_lines = 0;
     int d;
-    inputfd.open (input);
-    if (inputfd.is_open()){
-        getline(inputfd,line);
-        d = num_columns(line);
-        num_lines++;
-        while ( getline(inputfd,line) ){
-            num_lines++;
-        }
-        inputfd.close();
-    }else{
-        cerr << "Unable to open file: " << input << endl;
-    }
+
+    get_data_lenghts(input,num_lines,d);
+    data_point<int> data_set[num_lines];
+    feed_data_set(input,data_set,d);
+
 
     cout << "d: " << d << endl;
     cout << "num lines: " << num_lines << endl;
@@ -109,27 +104,13 @@ int main(int argc, char** argv) {
         tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
     }*/
     ht.print_stats();
-    inputfd.open (input);
-    vector<int> xx;
-    char cc[1024] ;
-    string name;
     for (int i=0 ; i< num_lines; i++) {
-        getline(inputfd,line);
-        strncpy(cc,line.c_str(),d*sizeof(int));
-        char *pch = strtok (cc ," \t");
-        while (pch != NULL)
-        {
-            xx.push_back(atoi(pch));
-            pch = strtok (NULL, " \t");
-        }
-        ht.add_item(name,{xx,0},num_lines/const_lsh::table_size);
-        xx.clear();
+        ht.add_item(data_set[i],num_lines/const_lsh::table_size);
     }
-    inputfd.close();
 
-    //ht.print_stats();
+    ht.print_stats();
 
-
+    /*
     ifstream queryfd;
     queryfd.open(query);
     vector<data_point> neighboors,temp;
@@ -158,7 +139,7 @@ int main(int argc, char** argv) {
             cout <<"result: "<< result;
         }
         xx.clear();
-    }
+    }*/
 
     //unordered_map<Key,string> hash_tb;
     /*Key a ,b , c1, d1;
@@ -175,4 +156,43 @@ int main(int argc, char** argv) {
 
     return 0;
 
+}
+
+void feed_data_set(string input, data_point<int> *pPoint,int d) {
+    char cc[1024] ;
+    string name;
+    string line;
+    ifstream inputfd;
+    inputfd.open (input);
+    int i=0;
+    while(getline(inputfd,line)){
+        strncpy(cc,line.c_str(),(d+10)*sizeof(int));
+        char *pch = strtok (cc ," \t");
+        while (pch != NULL)
+        {
+            pPoint[i].point.push_back(atoi(pch));
+            pch = strtok (NULL, " \t");
+        }
+        pPoint[i].name = "item_"+to_string(i);
+        i++;
+    }
+    inputfd.close();
+}
+
+void get_data_lenghts(string input,int& lines, int& d) {
+    ifstream inputfd;
+    string line;
+    inputfd.open (input);
+    if (inputfd.is_open()){
+        getline(inputfd,line);
+        d = num_columns(line);
+        lines++;
+        while ( getline(inputfd,line) ){
+            lines++;
+        }
+        inputfd.close();
+    }else{
+        cerr << "Unable to open file: " << input << endl;
+    }
+    inputfd.close();
 }

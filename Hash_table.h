@@ -6,9 +6,10 @@
 #define UNTITLED_HASH_TABLE_H
 #include <unordered_map>
 #include <iostream>
-#include "./Key.h"
-#include "./hash_func.h"
+#include "Key.h"
+#include "hash_func.h"
 #include "data_point.h"
+#include "Value.h"
 
 
 class Hash_table {
@@ -16,13 +17,13 @@ private:
     int d;
     int k;
     hash_func *hfunc;
-    std::unordered_map<Key,std::string> hash_tb;
+    std::unordered_multimap<Key,value_point<int>> hash_tb;
 public:
     Hash_table(int, int, int, std::string);
     ~Hash_table();
-    void add_item(std::string ,Key,int);
+    void add_item(data_point<int>&,int);
     //vector<string,Key> get_bucket(string);
-    std::vector<data_point> get_bucket(Key);
+    //std::vector<data_point> get_bucket(Key);
     void print_stats();
 };
 

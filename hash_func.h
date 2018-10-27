@@ -7,6 +7,8 @@
 #include<iostream>
 #include <vector>
 #include "Key.h"
+#include "data_point.h"
+#include "Value.h"
 
 class hash_func {
 private:
@@ -16,7 +18,7 @@ private:
 public:
     hash_func(int,int);
     ~hash_func();
-    long int hash_value(Key&,int,int);
+    value_point<int> hash_value(data_point<int>&,int&,int,int);
 };
 
 

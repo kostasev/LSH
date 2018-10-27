@@ -6,6 +6,7 @@
 #include <climits>
 #include <random>
 #include "constants.h"
+#include "data_point.h"
 
 hash_func::hash_func(int dimension, int k){
     std::default_random_engine generator;
@@ -21,22 +22,26 @@ hash_func::hash_func(int dimension, int k){
         v[i]=temp;
     }
 }
+
 hash_func::~hash_func(){}
 
-long int hash_func::hash_value(Key& k,int size,int table_size){
+value_point<int> hash_func::hash_value(data_point<int>& k,int &f,int size,int table_size){
+    value_point<int> point;
     long int sum=0;
     double h=0.0;
     for(int j=0; j<size; j++){
-        for (int i=0; i<k.dim.size(); i++){
-            h+=this->v[j][i]*k.dim[i];
+        for (int i=0; i<k.point.size(); i++){
+            h+=this->v[j][i]*k.point[i];
         }
         h+=this->t[j];
         h=h/const_lsh::w;
+        point.point.push_back(int(h));
         h*=this->r[j];
         sum+=h;
         h=0.0;
     }
-    k.hash_val=(((sum%INT_MAX)%table_size)+table_size)%table_size;
-    std::cout << "This the hash: " << k.hash_val << std::endl;
-    return k.hash_val;
+    f=(((sum%INT_MAX)%table_size)+table_size)%table_size;
+    std::cout << "This the hash: " << f << std::endl;
+    point.p=&k;
+    return point;
 }

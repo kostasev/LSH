@@ -3,13 +3,13 @@
 //
 
 #include "Hash_table.h"
-
+#include "Value.h"
 
 Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
     this->k=k;
     this->d=dimension;
-    hash_tb.rehash(buck);
-    hash_tb.max_load_factor(1000);
+    this->hash_tb.rehash(buck);
+    this->hash_tb.max_load_factor(1000);
     if (func == "euclidean") {
         hfunc = new hash_func(dimension, k);
     }
@@ -17,11 +17,17 @@ Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
 Hash_table::~Hash_table() {
 }
 
-void Hash_table::add_item(std::string name,Key k,int tb_size){
-    this->hfunc->hash_value(k,this->k,tb_size);
-    this->hash_tb[k]=name;
+void Hash_table::add_item(data_point<int>& k,int tb_size){
+    Key f;
+    value_point<int> point = this->hfunc->hash_value(k,f.hash_val,this->k,tb_size);
+    std::cout <<"yooo "<< point.p->name;
+    std::cout <<"size: "<< point.point.size();
+    for (int z=0 ; z<point.point.size();z++){
+        std::cout <<" "<< point.point[z];
+    }
+    this->hash_tb.insert({f,point});
 }
-
+/*
 std::vector<data_point> Hash_table::get_bucket(Key k){
     size_t pos = this->hash_tb.equal_range({k,0});
     std::vector<data_point> bucks;
@@ -32,7 +38,7 @@ std::vector<data_point> Hash_table::get_bucket(Key k){
         bucks.push_back({ii->first,ii->second});
     }
     return bucks;
-}
+}*/
 
 void Hash_table::print_stats(){
     std::cout << "Number of buckets: " << hash_tb.bucket_count() << std::endl;
