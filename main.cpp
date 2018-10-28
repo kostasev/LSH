@@ -27,6 +27,8 @@ double a_nn(std::map<std::string, value_point<int>> map, data_point<int> point,d
 
 using namespace std;
 
+
+
 int main(int argc, char** argv) {
     string input = "", query = "", output = "";
     string func_name = "";
@@ -103,8 +105,8 @@ int main(int argc, char** argv) {
     feed_data_set(input, data_set, d);
 
     std::mt19937 generator;
-    generator.seed(std::random_device()());
-    std::uniform_int_distribution<int>   int_dist(-50,50);
+    //generator.seed(std::random_device()());
+    std::uniform_int_distribution<int>   int_dist(-20,20);
     vector<int> r;
     for (int i=0;i<k;i++){
         r.push_back(int_dist(generator));
@@ -141,7 +143,6 @@ int main(int argc, char** argv) {
         l_nn=a_nn(bucks,query_set[k],time);
         if ((l_nn/t_nn)>max_app){
             max_app = l_nn/t_nn;
-            cout << "EDW EINAI I MLKIA ______ " << max_app << endl;
         }
         bucks.clear();
     }

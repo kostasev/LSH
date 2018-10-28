@@ -15,8 +15,6 @@ Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
     //}
 }
 Hash_table::~Hash_table() {
-    this->hfunc->~hash_func();
-    this->hfunc=NULL;
     this->hash_tb.clear();
 }
 

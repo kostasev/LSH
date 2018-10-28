@@ -8,9 +8,10 @@
 #include "constants.h"
 #include "data_point.h"
 
+
 hash_func::hash_func(int dimension, int k){
     std::mt19937 generator;
-    generator.seed(std::random_device()());
+    generator.default_seed;//(std::random_device()());
     std::normal_distribution<double>         n_distribution(0.0,1.0);
     std::uniform_real_distribution<double>   uint_distW(0,const_lsh::w);
     std::vector<double> temp(dimension);
