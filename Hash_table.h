@@ -6,6 +6,7 @@
 #define UNTITLED_HASH_TABLE_H
 #include <unordered_map>
 #include <iostream>
+#include <map>
 #include "Key.h"
 #include "hash_func.h"
 #include "data_point.h"
@@ -22,7 +23,7 @@ public:
     Hash_table(int, int, int, std::string);
     ~Hash_table();
     void add_item(data_point<int>&,int);
-    //vector<string,Key> get_bucket(string);
+    void get_bucket(Key,std::map<std::string,value_point<int>>&);
     //std::vector<data_point> get_bucket(Key);
     void print_stats();
 };

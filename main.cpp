@@ -7,6 +7,7 @@
 #include <cstring>
 #include <numeric>
 #include <cmath>
+#include <chrono>
 #include "./constants.h"
 #include "./utilities.h"
 #include "./Key.h"
@@ -17,18 +18,22 @@ void get_data_lenghts(std::string, int&, int&);
 
 void feed_data_set(std::string, data_point<int>* , int);
 
+void true_nn(data_point<int>, data_point<int> *,int);
+
+double euclidean_dist(std::vector<int>, std::vector<int>);
+
 using namespace std;
 
 int main(int argc, char** argv) {
-    string input="", query="", output="";
+    string input = "", query = "", output = "";
     string func_name = "";
     bool read_query;
-    int c,R=400;
-    int k=-1;
-    int L=-1;
+    int c, R = 400;
+    int k = -1;
+    int L = -1;
 
     /* Reading Arguments from command line */
-    while(( c = getopt(argc,argv,"d:q:k:L:o:f:h:R")) !=-1 ){
+    while ((c = getopt(argc, argv, "d:q:k:L:o:f:h:R")) != -1) {
         switch (c) {
             case 'd':
                 input = optarg;
@@ -50,7 +55,7 @@ int main(int argc, char** argv) {
                 break;
             case 'f':
                 func_name = optarg;
-                if ((func_name != "cosine") || (func_name!="euclidean")) {
+                if ((func_name != "cosine") || (func_name != "euclidean")) {
                     cerr << "Invalid function name" << endl;
                 }
                 break;
@@ -71,42 +76,65 @@ int main(int argc, char** argv) {
                 abort();
         }
     }
-    if (input.size()==0) {
-        cerr << "Data file was not defined!" << endl ;
+    if (input.size() == 0) {
+        cerr << "Data file was not defined!" << endl;
     }
-    if (k==-1) k=const_lsh::k;
-    if (L==-1) L=const_lsh::L;
-    if (query.size()==0) read_query=true;
-    if (output.size()==0) output = "./output.txt";
-    if (func_name.size()==0) func_name = const_lsh::def_func;
+    if (k == -1) k = const_lsh::k;
+    if (L == -1) L = const_lsh::L;
+    if (query.size() == 0) read_query = true;
+    if (output.size() == 0) output = "./output.txt";
+    if (func_name.size() == 0) func_name = const_lsh::def_func;
 
     cout << "L: " << L << endl;
     cout << "k: " << k << endl;
-    cout << "in: " << input  << endl;
-    cout << "qr: " << query  << endl;
+    cout << "in: " << input << endl;
+    cout << "qr: " << query << endl;
     cout << "ou: " << output << endl;
     cout << "fn: " << func_name << endl;
 
     int num_lines = 0;
     int d;
 
-    get_data_lenghts(input,num_lines,d);
+    get_data_lenghts(input, num_lines, d);
     data_point<int> data_set[num_lines];
-    feed_data_set(input,data_set,d);
+    feed_data_set(input, data_set, d);
 
 
     cout << "d: " << d << endl;
     cout << "num lines: " << num_lines << endl;
 
-    Hash_table ht = Hash_table(num_lines/const_lsh::table_size, d, k, func_name);
-    /*vector <Hash_table> tables ;
+    //Hash_table ht = Hash_table(num_lines / const_lsh::table_size, d, k, func_name);
+    vector <Hash_table> tables ;
     for (int i=0; i<L ; i++){
         tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
-    }*/
-    ht.print_stats();
-    for (int i=0 ; i< num_lines; i++) {
-        ht.add_item(data_set[i],num_lines/const_lsh::table_size);
     }
+    //ht.print_stats();
+    for (int i=0;i<tables.size();i++) {
+        for (int i = 0; i < num_lines; i++) {
+            tables[i].add_item(data_set[i], num_lines / const_lsh::table_size);
+        }
+    }
+
+    int num_lines_q = 0, dq = 0;
+    get_data_lenghts(query, num_lines_q, dq);
+    data_point<int> query_set[num_lines_q];
+    feed_data_set(query, query_set, dq);
+    cout << " Query Num lines: " << num_lines_q << endl;
+    for (int k = 0; k < num_lines_q; k++) {
+        true_nn(query_set[k], data_set, num_lines);
+    }
+
+
+    map<string, value_point<int>> bucks;
+    Key temp1;
+    temp1.hash_val = 4281;
+    ht.get_bucket(temp1, bucks);
+
+    cout << "THIS THE BUCK" << endl;
+    for (std::map<string, value_point<int>>::iterator it = bucks.begin(); it != bucks.end(); ++it){
+        std::cout << it->first << " => " << it->second.point[0] << '\n';
+    }
+
 
     ht.print_stats();
 
@@ -156,6 +184,33 @@ int main(int argc, char** argv) {
 
     return 0;
 
+}
+
+void true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
+    double min_dist = 999999999.9;
+    double dist;
+    string nn="NONE";
+    auto start = chrono::steady_clock::now();
+    for (int i=0; i<num_data ; i++){
+        if ((dist=euclidean_dist(point.point,pPoint[i].point)) < min_dist){
+            min_dist = dist;
+            nn = pPoint[i].name;
+        }
+    }
+    auto end = chrono::steady_clock::now();
+    chrono::duration<double> diff = end-start;;
+    if (nn!="NONE"){
+        cout << "True NN of query "<< point.name << " ==> " << nn << ", Value ==> " << min_dist << " search time: " << diff.count() << " seconds"<< endl;
+    }
+}
+
+double euclidean_dist(vector<int> p1,vector<int> p2) {
+    double sum = 0.0;
+    for (int i=0 ; i<p1.size();i++){
+        sum+=(p1[i]-p2[i])*(p1[i]-p2[i]);
+    }
+    sum = sqrt(sum);
+    return sum;
 }
 
 void feed_data_set(string input, data_point<int> *pPoint,int d) {

@@ -20,25 +20,19 @@ Hash_table::~Hash_table() {
 void Hash_table::add_item(data_point<int>& k,int tb_size){
     Key f;
     value_point<int> point = this->hfunc->hash_value(k,f.hash_val,this->k,tb_size);
-    std::cout <<"yooo "<< point.p->name;
-    std::cout <<"size: "<< point.point.size();
-    for (int z=0 ; z<point.point.size();z++){
-        std::cout <<" "<< point.point[z];
-    }
     this->hash_tb.insert({f,point});
-}
-/*
-std::vector<data_point> Hash_table::get_bucket(Key k){
-    size_t pos = this->hash_tb.equal_range({k,0});
-    std::vector<data_point> bucks;
-    for ( auto ii = hash_tb.begin(pos) ; ii != hash_tb.end(pos) ; ii++ ){
-        std::cout << ii->first.dim.size()
-             << " "
-             << ii->second;
-        bucks.push_back({ii->first,ii->second});
+    auto range=this->hash_tb.equal_range(f);
+    for(auto it = range.first; it != range.second ; it++ ){
+        std::cout << it->second.p->name << " f: " << it->first.hash_val << std::endl;
     }
-    return bucks;
-}*/
+}
+
+void Hash_table::get_bucket(Key k, std::map<std::string,value_point<int>>& mp){
+    auto range=this->hash_tb.equal_range(k);
+    for(auto it = range.first; it != range.second ; it++ ){
+        mp.insert({it->second.p->name,it->second});
+    }
+}
 
 void Hash_table::print_stats(){
     std::cout << "Number of buckets: " << hash_tb.bucket_count() << std::endl;
