@@ -4,11 +4,12 @@
 
 #ifndef UNTITLED_DATA_POINT_H
 #define UNTITLED_DATA_POINT_H
+#include <iostream>
+#include <vector>
 
-#include "Key.h"
-
+template <typename T>
 struct data_point {
-    Key k;
-    std::string s;
+    std::vector<T>  point;
+    std::string     name;
 };
 #endif //UNTITLED_DATA_POINT_H
