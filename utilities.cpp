@@ -15,7 +15,6 @@ int num_columns(std::string line) {
     if (!isspace(prev)) {
         words += 1;
     }
-    std::cout << "IS: " << isspace('\n') << " " << prev <<std::endl;
     return words;
 }
 

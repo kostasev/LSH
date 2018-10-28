@@ -9,18 +9,37 @@
 #include "data_point.h"
 
 hash_func::hash_func(int dimension, int k){
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0,1.0);
-    std::vector<float> temp(dimension);
+    std::mt19937 generator;
+    generator.seed(std::random_device()());
+    std::normal_distribution<double>        n_distribution(0.0,1.0);
+    std::uniform_int_distribution<int>      uint_dist10(0,20);
+    std::uniform_real_distribution<float>   uint_distW(0,const_lsh::w);
+    std::vector<double> temp(dimension);
     this->v.resize(k);
     for(int i=0 ; i < k ; i++ ) {
-        this->r.push_back(rand()%9999);
-        this->t.push_back(static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/const_lsh::w)));
+        this->r.push_back(uint_dist10(generator));
+        this->t.push_back(uint_distW(generator));
         for(int j=0 ; j < dimension ; j++ ){
-            temp[j]=distribution(generator);
+            temp[j]=n_distribution(generator);
         }
         v[i]=temp;
     }
+    for(int i=0 ; i < k ; i++ ) {
+        std::cout<< i << " r " << this->r[i] <<std::endl;
+    }
+    for(int i=0 ; i < k ; i++ ) {
+        std::cout<< i << " t " << this->t[i] <<std::endl;
+        for(int j=0 ; j < dimension ; j++ ){
+            temp[j]=n_distribution(generator);
+        }
+        v[i]=temp;
+    }
+    for(int i=0 ; i < k ; i++ ) {
+        for(int j=0 ; j < dimension ; j++ ) {
+            std::cout << i << j << " v  " << this->v[i][j] << std::endl;
+        }
+    }
+
 }
 
 hash_func::~hash_func(){}
@@ -41,7 +60,6 @@ value_point<int> hash_func::hash_value(data_point<int>& k,int &f,int size,int ta
         h=0.0;
     }
     f=(((sum%INT_MAX)%table_size)+table_size)%table_size;
-    std::cout << "This the hash: " << f << std::endl;
     point.p=&k;
     return point;
 }

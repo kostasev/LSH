@@ -22,6 +22,8 @@ void true_nn(data_point<int>, data_point<int> *,int);
 
 double euclidean_dist(std::vector<int>, std::vector<int>);
 
+void a_nn(std::map<std::string, value_point<int>> map, data_point<int> point);
+
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -105,38 +107,39 @@ int main(int argc, char** argv) {
 
     //Hash_table ht = Hash_table(num_lines / const_lsh::table_size, d, k, func_name);
     vector <Hash_table> tables ;
+    //Hash_table *tables;
+    //tables = new Hash_table;
     for (int i=0; i<L ; i++){
         tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
     }
     //ht.print_stats();
-    for (int i=0;i<tables.size();i++) {
+    for (int j=0;j<tables.size();j++) {
         for (int i = 0; i < num_lines; i++) {
-            tables[i].add_item(data_set[i], num_lines / const_lsh::table_size);
+            tables[j].add_item(data_set[i], num_lines / const_lsh::table_size);
         }
     }
 
+    map<string, value_point<int>> bucks;
     int num_lines_q = 0, dq = 0;
     get_data_lenghts(query, num_lines_q, dq);
     data_point<int> query_set[num_lines_q];
     feed_data_set(query, query_set, dq);
     cout << " Query Num lines: " << num_lines_q << endl;
+    Key query_key;
     for (int k = 0; k < num_lines_q; k++) {
+        for (int i=0;i<tables.size();i++){
+            query_key=tables[i].query_item(query_set[k],num_lines / const_lsh::table_size);
+            tables[i].get_bucket(query_key, bucks);
+        }
+        cout << "Query Buck : " << bucks.size() <<endl;
+        a_nn(bucks,query_set[k]);
         true_nn(query_set[k], data_set, num_lines);
+        bucks.clear();
     }
 
 
-    map<string, value_point<int>> bucks;
-    Key temp1;
-    temp1.hash_val = 4281;
-    ht.get_bucket(temp1, bucks);
 
-    cout << "THIS THE BUCK" << endl;
-    for (std::map<string, value_point<int>>::iterator it = bucks.begin(); it != bucks.end(); ++it){
-        std::cout << it->first << " => " << it->second.point[0] << '\n';
-    }
-
-
-    ht.print_stats();
+   tables[0].print_stats();
 
     /*
     ifstream queryfd;
@@ -186,6 +189,24 @@ int main(int argc, char** argv) {
 
 }
 
+void a_nn(map<string,value_point<int>> bucks, data_point<int> point) {
+    double min_dist = 999999999.9;
+    double dist;
+    string nn="NONE";
+    auto start = chrono::steady_clock::now();
+    for (auto  it = bucks.begin(); it != bucks.end(); it++ ){
+        if ((dist=euclidean_dist(point.point,it->second.point)) < min_dist){
+            min_dist = dist;
+            nn = it->first;
+        }
+    }
+    auto end = chrono::steady_clock::now();
+    chrono::duration<double> diff = end-start;
+    if (nn!="NONE"){
+        cout << "Aproximate NN of query "<< point.name << " ==> " << nn << ", Value ==> " << min_dist << " search time: " << diff.count() << " seconds"<< endl;
+    }
+}
+
 void true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
     double min_dist = 999999999.9;
     double dist;
@@ -198,7 +219,7 @@ void true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
         }
     }
     auto end = chrono::steady_clock::now();
-    chrono::duration<double> diff = end-start;;
+    chrono::duration<double> diff = end-start;
     if (nn!="NONE"){
         cout << "True NN of query "<< point.name << " ==> " << nn << ", Value ==> " << min_dist << " search time: " << diff.count() << " seconds"<< endl;
     }

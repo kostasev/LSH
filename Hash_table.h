@@ -24,7 +24,7 @@ public:
     ~Hash_table();
     void add_item(data_point<int>&,int);
     void get_bucket(Key,std::map<std::string,value_point<int>>&);
-    //std::vector<data_point> get_bucket(Key);
+    Key query_item(data_point<int>&,int);
     void print_stats();
 };
 

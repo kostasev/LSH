@@ -13,8 +13,8 @@
 class hash_func {
 private:
     std::vector<int> r;
-    std::vector<std::vector<float>> v;
-    std::vector<float> t;
+    std::vector<std::vector<double>> v;
+    std::vector<double> t;
 public:
     hash_func(int,int);
     ~hash_func();
