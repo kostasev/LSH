@@ -8,6 +8,7 @@
 #include <numeric>
 #include <cmath>
 #include <chrono>
+#include <random>
 #include "./constants.h"
 #include "./utilities.h"
 #include "./Key.h"
@@ -18,11 +19,11 @@ void get_data_lenghts(std::string, int&, int&);
 
 void feed_data_set(std::string, data_point<int>* , int);
 
-void true_nn(data_point<int>, data_point<int> *,int);
+double true_nn(data_point<int>, data_point<int> *,int);
 
 double euclidean_dist(std::vector<int>, std::vector<int>);
 
-void a_nn(std::map<std::string, value_point<int>> map, data_point<int> point);
+double a_nn(std::map<std::string, value_point<int>> map, data_point<int> point,double &time);
 
 using namespace std;
 
@@ -101,21 +102,25 @@ int main(int argc, char** argv) {
     data_point<int> data_set[num_lines];
     feed_data_set(input, data_set, d);
 
-
+    std::mt19937 generator;
+    generator.seed(std::random_device()());
+    std::uniform_int_distribution<int>   int_dist(-50,50);
+    vector<int> r;
+    for (int i=0;i<k;i++){
+        r.push_back(int_dist(generator));
+    }
     cout << "d: " << d << endl;
     cout << "num lines: " << num_lines << endl;
 
-    //Hash_table ht = Hash_table(num_lines / const_lsh::table_size, d, k, func_name);
     vector <Hash_table> tables ;
-    //Hash_table *tables;
-    //tables = new Hash_table;
+
     for (int i=0; i<L ; i++){
         tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
     }
-    //ht.print_stats();
+
     for (int j=0;j<tables.size();j++) {
         for (int i = 0; i < num_lines; i++) {
-            tables[j].add_item(data_set[i], num_lines / const_lsh::table_size);
+            tables[j].add_item(data_set[i], num_lines / const_lsh::table_size,r);
         }
     }
 
@@ -124,72 +129,36 @@ int main(int argc, char** argv) {
     get_data_lenghts(query, num_lines_q, dq);
     data_point<int> query_set[num_lines_q];
     feed_data_set(query, query_set, dq);
-    cout << " Query Num lines: " << num_lines_q << endl;
+    double t_nn,l_nn,max_app=0.0,time;
     Key query_key;
     for (int k = 0; k < num_lines_q; k++) {
+        cout << "\nQuery Item: " << query_set[k].name <<endl;
         for (int i=0;i<tables.size();i++){
-            query_key=tables[i].query_item(query_set[k],num_lines / const_lsh::table_size);
+            query_key=tables[i].query_item(query_set[k],num_lines / const_lsh::table_size,r);
             tables[i].get_bucket(query_key, bucks);
         }
-        cout << "Query Buck : " << bucks.size() <<endl;
-        a_nn(bucks,query_set[k]);
-        true_nn(query_set[k], data_set, num_lines);
+        t_nn=true_nn(query_set[k], data_set, num_lines);
+        l_nn=a_nn(bucks,query_set[k],time);
+        if ((l_nn/t_nn)>max_app){
+            max_app = l_nn/t_nn;
+            cout << "EDW EINAI I MLKIA ______ " << max_app << endl;
+        }
         bucks.clear();
     }
+    time=time/num_lines_q;
+    cout << "\nMax Approximate ratio: " << max_app<<endl;
+    cout << "Average search time: " << time;
 
 
-
-   tables[0].print_stats();
-
-    /*
-    ifstream queryfd;
-    queryfd.open(query);
-    vector<data_point> neighboors,temp;
-    while (getline(queryfd,line)) {
-        strncpy(cc,line.c_str(),d*sizeof(int));
-        char *pch = strtok (cc ," \t");
-        while (pch != NULL)
-        {
-            xx.push_back(atoi(pch));
-            pch = strtok (NULL, " \t");
-        }
-        temp = ht.get_bucket({xx,0});
-        cout << "size: " << temp.size();
-        neighboors.insert(neighboors.end(),temp.begin(),temp.end());
-        for(int z=0;z<temp.size();z++){
-            cout << "size: " << temp.size();
-            for(int x=0;x<temp.size();x++){
-                cout << temp[z].k.dim[x] << " ";
-                //cout << neighboors[z].k.dim[x] << " ";
-            }
-            cout << endl << endl;
-        }
-        double result;
-        for (int z=0;z<neighboors.size();z++){
-            result = std::sqrt(std::inner_product(begin(xx), end(xx), begin(neighboors[z].k.dim), 0));
-            cout <<"result: "<< result;
-        }
-        xx.clear();
-    }*/
-
-    //unordered_map<Key,string> hash_tb;
-    /*Key a ,b , c1, d1;
-    a.dim = { 1 , 2 , 3};
-    hash_tb[a]="item1";
-    b.dim = { 1 , 2 , 4};
-    hash_tb[b]="item2";
-    c1.dim = { 1 , 2 , 5};
-    hash_tb[c1]="item3";
-    d1.dim = { 1 , 2 , 6};
-    hash_tb[d1]="item4";*/
-
-
+    r.clear();
+    tables.clear();
+    bucks.clear();
 
     return 0;
 
 }
 
-void a_nn(map<string,value_point<int>> bucks, data_point<int> point) {
+double a_nn(map<string,value_point<int>> bucks, data_point<int> point,double &time) {
     double min_dist = 999999999.9;
     double dist;
     string nn="NONE";
@@ -203,11 +172,19 @@ void a_nn(map<string,value_point<int>> bucks, data_point<int> point) {
     auto end = chrono::steady_clock::now();
     chrono::duration<double> diff = end-start;
     if (nn!="NONE"){
-        cout << "Aproximate NN of query "<< point.name << " ==> " << nn << ", Value ==> " << min_dist << " search time: " << diff.count() << " seconds"<< endl;
+        cout << "Nearest neighbor LSH: " << nn << endl
+             << "distanceLSH: " << min_dist << " search time: " << diff.count() << " seconds"<< endl;
+        time+=diff.count();
     }
+    else {
+        return 0;
+    }
+
+
+    return min_dist;
 }
 
-void true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
+double true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
     double min_dist = 999999999.9;
     double dist;
     string nn="NONE";
@@ -221,8 +198,10 @@ void true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
     auto end = chrono::steady_clock::now();
     chrono::duration<double> diff = end-start;
     if (nn!="NONE"){
-        cout << "True NN of query "<< point.name << " ==> " << nn << ", Value ==> " << min_dist << " search time: " << diff.count() << " seconds"<< endl;
+        cout << "Nearest neighbor True: " << nn << endl
+            << "distanceTrue " << min_dist << ", search time: " << diff.count() << " seconds"<< endl;
     }
+    return min_dist;
 }
 
 double euclidean_dist(vector<int> p1,vector<int> p2) {

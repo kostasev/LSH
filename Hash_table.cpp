@@ -11,22 +11,24 @@ Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
     this->hash_tb.rehash(buck);
     this->hash_tb.max_load_factor(10000);
     //if (func == "euclidean") {
-    std::cout << " AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " <<std::endl;
         hfunc = new hash_func(dimension, k);
     //}
 }
 Hash_table::~Hash_table() {
+    this->hfunc->~hash_func();
+    this->hfunc=NULL;
+    this->hash_tb.clear();
 }
 
-void Hash_table::add_item(data_point<int>& k,int tb_size){
+void Hash_table::add_item(data_point<int>& k,int tb_size,std::vector<int> r){
     Key f;
-    value_point<int> point = this->hfunc->hash_value(k,f.hash_val,this->k,tb_size);
+    value_point<int> point = this->hfunc->hash_value(k,f.hash_val,this->k,tb_size,r);
     this->hash_tb.insert({f,point});
 }
 
-Key Hash_table::query_item(data_point<int>& k,int tb_size){
+Key Hash_table::query_item(data_point<int>& k,int tb_size,std::vector<int> r){
     Key f;
-    this->hfunc->hash_value(k,f.hash_val,this->k,tb_size);
+    this->hfunc->hash_value(k,f.hash_val,this->k,tb_size,r);
     return f;
 }
 

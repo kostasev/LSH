@@ -22,9 +22,9 @@ private:
 public:
     Hash_table(int, int, int, std::string);
     ~Hash_table();
-    void add_item(data_point<int>&,int);
+    void add_item(data_point<int>&,int,std::vector<int>);
     void get_bucket(Key,std::map<std::string,value_point<int>>&);
-    Key query_item(data_point<int>&,int);
+    Key query_item(data_point<int>&,int,std::vector<int>);
     void print_stats();
 };
 
