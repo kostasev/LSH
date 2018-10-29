@@ -13,10 +13,11 @@
 
 class hash_func {
 private:
+    std::string func;
     std::vector<std::vector<double>> v;
     std::vector<double> t;
 public:
-    hash_func(int,int);
+    hash_func(int,int,std::string);
     ~hash_func();
     void clean();
     value_point<int> hash_value(data_point<int>&,int&,int,int,std::vector<int>);

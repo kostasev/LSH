@@ -12,7 +12,7 @@ Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
     this->hash_tb.rehash(buck);
     this->hash_tb.max_load_factor(10000);
     //if (func == "euclidean") {
-        hfunc = new hash_func(dimension, k);
+        hfunc = new hash_func(dimension, k,func);
     //}
 }
 Hash_table::~Hash_table() {

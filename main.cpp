@@ -20,11 +20,15 @@ void get_data_lenghts(std::string, int&, int&);
 
 void feed_data_set(std::string, data_point<int>* , int);
 
-double true_nn(data_point<int>, data_point<int> *,int);
+double true_nn(data_point<int>, data_point<int> *,int,std::string s);
 
 double euclidean_dist(std::vector<int>, std::vector<int>);
 
-double a_nn(std::map<std::string, value_point<int>> map, data_point<int> point,double &time);
+double a_nn(std::map<std::string, value_point<int>> map, data_point<int> point,double &time,std::string s);
+
+void range_nn(std::map<std::string, value_point<int>> map, data_point<int> point, int r,std::string s);
+
+double cosine_similarity(std::vector<int> p1,std::vector<int> p2);
 
 using namespace std;
 
@@ -34,7 +38,7 @@ int main(int argc, char** argv) {
     string input = "", query = "", output = "";
     string func_name = "";
     bool read_query;
-    int c, R = 400;
+    int c, R = 200;
     int k = -1;
     int L = -1;
 
@@ -61,7 +65,7 @@ int main(int argc, char** argv) {
                 break;
             case 'f':
                 func_name = optarg;
-                if ((func_name != "cosine") || (func_name != "euclidean")) {
+                if ((func_name != "cosine") && (func_name != "euclidean")) {
                     cerr << "Invalid function name" << endl;
                 }
                 break;
@@ -105,25 +109,36 @@ int main(int argc, char** argv) {
     data_point<int> data_set[num_lines];
     feed_data_set(input, data_set, d);
 
+    cout << "d: " << d << endl;
+    cout << "num lines: " << num_lines << endl;
+
     std::mt19937 generator;
     generator.seed(std::default_random_engine()());
     std::uniform_int_distribution<int>   int_dist(-99,99);
     vector<int> r;
-    for (int i=0;i<k;i++){
-        r.push_back(int_dist(generator));
+
+    if(func_name=="euclidean"){
+        for (int i=0;i<k;i++){
+            r.push_back(int_dist(generator));
+        }
     }
-    cout << "d: " << d << endl;
-    cout << "num lines: " << num_lines << endl;
+
 
     vector <Hash_table> tables ;
-
+    int table_sz=0;
+    if (func_name=="euclidean"){
+        table_sz=num_lines/const_lsh::table_size;
+    }
+    else{
+        table_sz = (int) pow(2.0,k);
+    }
     for (int i=0; i<L ; i++){
-        tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
+        tables.push_back(Hash_table(table_sz, d, k, func_name));
     }
 
     for (int j=0;j<tables.size();j++) {
         for (int i = 0; i < num_lines; i++) {
-            tables[j].add_item(data_set[i], num_lines / const_lsh::table_size,r);
+            tables[j].add_item(data_set[i],table_sz,r);
         }
     }
 
@@ -137,11 +152,12 @@ int main(int argc, char** argv) {
     for (int k = 0; k < num_lines_q; k++) {
         cout << "\nQuery Item: " << query_set[k].name <<endl;
         for (int i=0;i<tables.size();i++){
-            query_key=tables[i].query_item(query_set[k],num_lines / const_lsh::table_size,r);
+            query_key=tables[i].query_item(query_set[k],table_sz,r);
             tables[i].get_bucket(query_set[k],query_key, bucks,r);
         }
-        t_nn=true_nn(query_set[k], data_set, num_lines);
-        l_nn=a_nn(bucks,query_set[k],time);
+        range_nn(bucks,query_set[k],R,func_name);
+        t_nn=true_nn(query_set[k], data_set, num_lines,func_name);
+        l_nn=a_nn(bucks,query_set[k],time,func_name);
         if ((l_nn/t_nn)>max_app){
             max_app = l_nn/t_nn;
         }
@@ -166,17 +182,46 @@ int main(int argc, char** argv) {
 
 }
 
-double a_nn(map<string,value_point<int>> bucks, data_point<int> point,double &time) {
+void range_nn(map<string, value_point<int>> bucks, data_point<int> point, int r,std::string s) {
+    cout << "R-near neighbors:" << endl;
+    if (s=="euclidean"){
+        for (auto  it = bucks.begin(); it != bucks.end(); it++ ){
+            if ((euclidean_dist(point.point,it->second.p->point)) < (double)r){
+                cout << it->first << endl;
+            }
+        }
+    }else{
+        for (auto  it = bucks.begin(); it != bucks.end(); it++ ){
+            if ((cosine_similarity(point.point,it->second.p->point)) < (double)r){
+                cout << it->first << endl;
+            }
+        }
+    }
+
+}
+
+double a_nn(map<string,value_point<int>> bucks, data_point<int> point,double &time,std::string s) {
     double min_dist = 9999999.9;
     double dist=0.0;
     string nn="NONE";
     auto start = chrono::steady_clock::now();
-    for (auto  it = bucks.begin(); it != bucks.end(); it++ ){
-        if ((dist=euclidean_dist(point.point,it->second.p->point)) < min_dist){
-            min_dist = dist;
-            nn = it->first;
+    if (s=="euclidean"){
+        for (auto  it = bucks.begin(); it != bucks.end(); it++ ){
+            if ((dist=euclidean_dist(point.point,it->second.p->point)) < min_dist){
+                min_dist = dist;
+                nn = it->first;
+            }
         }
     }
+    else {
+        for (auto  it = bucks.begin(); it != bucks.end(); it++ ){
+            if ((dist=cosine_similarity(point.point,it->second.p->point)) < min_dist){
+                min_dist = dist;
+                nn = it->first;
+            }
+        }
+    }
+
     auto end = chrono::steady_clock::now();
     chrono::duration<double> diff = end-start;
     if (nn!="NONE"){
@@ -192,17 +237,27 @@ double a_nn(map<string,value_point<int>> bucks, data_point<int> point,double &ti
     return min_dist;
 }
 
-double true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
+double true_nn(data_point<int> point, data_point<int> *pPoint,int num_data,std::string s) {
     double min_dist = 999999999.9;
     double dist;
     string nn="NONE";
     auto start = chrono::steady_clock::now();
-    for (int i=0; i<num_data ; i++){
-        if ((dist=euclidean_dist(point.point,pPoint[i].point)) < min_dist){
-            min_dist = dist;
-            nn = pPoint[i].name;
+    if(s=="euclidean"){
+        for (int i=0; i<num_data ; i++){
+            if ((dist=euclidean_dist(point.point,pPoint[i].point)) < min_dist){
+                min_dist = dist;
+                nn = pPoint[i].name;
+            }
+        }
+    } else {
+        for (int i=0; i<num_data ; i++){
+            if ((dist=cosine_similarity(point.point,pPoint[i].point)) < min_dist){
+                min_dist = dist;
+                nn = pPoint[i].name;
+            }
         }
     }
+
     auto end = chrono::steady_clock::now();
     chrono::duration<double> diff = end-start;
     if (nn!="NONE"){
@@ -213,14 +268,23 @@ double true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
 }
 
 double euclidean_dist(vector<int> p1,vector<int> p2) {
-    if (p1.size()!=p2.size())
-        cout << "\n\nDEN IENI IDIA RE MALAKAAAAAA\n\n";
     double sum = 0.0;
     for (int i=0 ; i<p1.size();i++){
         sum+=(p1[i]-p2[i])*(p1[i]-p2[i]);
     }
     sum = sqrt(sum);
     return sum;
+}
+
+double cosine_similarity(vector<int> p1,vector<int> p2)
+{
+    double dot = 0.0, denom_a = 0.0, denom_b = 0.0 ;
+    for(unsigned int i = 0u; i < p1.size(); i++) {
+        dot += p1[i] * p2[i] ;
+        denom_a += p1[i] * p1[i] ;
+        denom_b += p2[i] * p2[i] ;
+    }
+    return dot / (sqrt(denom_a) * sqrt(denom_b)) ;
 }
 
 void feed_data_set(string input, data_point<int> *pPoint,int d) {
