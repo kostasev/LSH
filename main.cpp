@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     feed_data_set(input, data_set, d);
 
     std::mt19937 generator;
-    generator.seed(std::random_device()());
+    generator.seed(std::default_random_engine()());
     std::uniform_int_distribution<int>   int_dist(-20,20);
     vector<int> r;
     for (int i=0;i<k;i++){
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
         cout << "\nQuery Item: " << query_set[k].name <<endl;
         for (int i=0;i<tables.size();i++){
             query_key=tables[i].query_item(query_set[k],num_lines / const_lsh::table_size,r);
-            tables[i].get_bucket(query_key, bucks);
+            tables[i].get_bucket(query_set[k],query_key, bucks,r);
         }
         t_nn=true_nn(query_set[k], data_set, num_lines);
         l_nn=a_nn(bucks,query_set[k],time);

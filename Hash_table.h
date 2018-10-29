@@ -5,6 +5,7 @@
 #ifndef UNTITLED_HASH_TABLE_H
 #define UNTITLED_HASH_TABLE_H
 #include <unordered_map>
+#include <random>
 #include <iostream>
 #include <map>
 #include "Key.h"
@@ -23,7 +24,7 @@ public:
     Hash_table(int, int, int, std::string,std::mt19937);
     ~Hash_table();
     void add_item(data_point<int>&,int,std::vector<int>);
-    void get_bucket(Key,std::map<std::string,value_point<int>>&);
+    void get_bucket(data_point<int>&,Key,std::map<std::string,value_point<int>>&,std::vector<int>);
     Key query_item(data_point<int>&,int,std::vector<int>);
     void print_stats();
 };

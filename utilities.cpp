@@ -2,6 +2,7 @@
 // Created by kosti on 10/20/2018.
 //
 #include <iostream>
+#include <vector>
 
 int num_columns(std::string line) {
     char prev=' ';
@@ -18,7 +19,7 @@ int num_columns(std::string line) {
     return words;
 }
 
-bool vectors_eq(vector<int> v1, vector<int> v2){
+bool vectors_eq(std::vector<int> v1, std::vector<int> v2){
     for (int i = 0 ; i<v1.size() ; i++){
         if(v1[i]!=v2[i]){
             return false;

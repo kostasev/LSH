@@ -6,6 +6,7 @@
 #define UNTITLED_HASH_FUNC_H
 #include<iostream>
 #include <vector>
+#include <random>
 #include "Key.h"
 #include "data_point.h"
 #include "Value.h"
