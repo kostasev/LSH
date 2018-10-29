@@ -18,6 +18,7 @@ private:
 public:
     hash_func(int,int);
     ~hash_func();
+    void clean();
     value_point<int> hash_value(data_point<int>&,int&,int,int,std::vector<int>);
 };
 

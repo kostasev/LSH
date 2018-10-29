@@ -17,6 +17,8 @@ Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
 }
 Hash_table::~Hash_table() {
     this->hash_tb.clear();
+    this->hfunc->clean();
+    this->hfunc=NULL;
 }
 
 void Hash_table::add_item(data_point<int>& k,int tb_size,std::vector<int> r){

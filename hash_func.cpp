@@ -25,6 +25,15 @@ hash_func::hash_func(int dimension, int k){
 }
 
 hash_func::~hash_func(){
+    for (int i=0;i<this->v.size();i++)
+        this->v[i].clear();
+    this->t.clear();
+    this->v.clear();
+}
+
+void hash_func::clean(){
+    for (int i=0;i<this->v.size();i++)
+        this->v[i].clear();
     this->t.clear();
     this->v.clear();
 }
