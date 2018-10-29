@@ -9,17 +9,16 @@
 #include "data_point.h"
 
 
-hash_func::hash_func(int dimension, int k,std::mt19937 gen){
-    //std::mt19937 generator;
-    //generator.default_seed;//(std::random_device()());
+hash_func::hash_func(int dimension, int k){
+    std::random_device rd; // assume unsigned int is 32 bits
+    std::mt19937_64 generator(rd()); // seeded with 256 bits of entropy from random_device
     std::normal_distribution<double>         n_distribution(0.0,1.0);
-    std::uniform_real_distribution<double>   uint_distW(0,const_lsh::w);
+    std::uniform_real_distribution<double>   uint_distW(0.0,(float) const_lsh::w);
     std::vector<double> temp(dimension);
-
     for(int i=0 ; i < k ; i++ ) {
-        this->t.push_back(uint_distW(gen));
+        this->t.push_back(uint_distW(generator));
         for(int j=0 ; j < dimension ; j++ ){
-            temp[j]=n_distribution(gen);
+            temp[j]=n_distribution(generator);
         }
         v.push_back(temp);
     }

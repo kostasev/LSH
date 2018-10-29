@@ -9,6 +9,7 @@
 #include <cmath>
 #include <chrono>
 #include <random>
+#include <unistd.h>
 #include "./constants.h"
 #include "./utilities.h"
 #include "./Key.h"
@@ -106,7 +107,7 @@ int main(int argc, char** argv) {
 
     std::mt19937 generator;
     generator.seed(std::default_random_engine()());
-    std::uniform_int_distribution<int>   int_dist(-20,20);
+    std::uniform_int_distribution<int>   int_dist(-99,99);
     vector<int> r;
     for (int i=0;i<k;i++){
         r.push_back(int_dist(generator));
@@ -117,7 +118,7 @@ int main(int argc, char** argv) {
     vector <Hash_table> tables ;
 
     for (int i=0; i<L ; i++){
-        tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name , generator));
+        tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
     }
 
     for (int j=0;j<tables.size();j++) {
@@ -131,7 +132,7 @@ int main(int argc, char** argv) {
     get_data_lenghts(query, num_lines_q, dq);
     data_point<int> query_set[num_lines_q];
     feed_data_set(query, query_set, dq);
-    double t_nn,l_nn,max_app=0.0,time;
+    double t_nn,l_nn,max_app=0.0,time=0.0;
     Key query_key;
     for (int k = 0; k < num_lines_q; k++) {
         cout << "\nQuery Item: " << query_set[k].name <<endl;
@@ -155,17 +156,23 @@ int main(int argc, char** argv) {
     tables.clear();
     bucks.clear();
 
+    for (int i=0;i<num_lines_q;i++){
+        query_set[i].point.clear();
+    }
+    for (int i=0;i<num_lines;i++){
+        data_set[i].point.clear();
+    }
     return 0;
 
 }
 
 double a_nn(map<string,value_point<int>> bucks, data_point<int> point,double &time) {
-    double min_dist = 999999999.9;
-    double dist;
+    double min_dist = 9999999.9;
+    double dist=0.0;
     string nn="NONE";
     auto start = chrono::steady_clock::now();
     for (auto  it = bucks.begin(); it != bucks.end(); it++ ){
-        if ((dist=euclidean_dist(point.point,it->second.point)) < min_dist){
+        if ((dist=euclidean_dist(point.point,it->second.p->point)) < min_dist){
             min_dist = dist;
             nn = it->first;
         }
@@ -206,6 +213,8 @@ double true_nn(data_point<int> point, data_point<int> *pPoint,int num_data) {
 }
 
 double euclidean_dist(vector<int> p1,vector<int> p2) {
+    if (p1.size()!=p2.size())
+        cout << "\n\nDEN IENI IDIA RE MALAKAAAAAA\n\n";
     double sum = 0.0;
     for (int i=0 ; i<p1.size();i++){
         sum+=(p1[i]-p2[i])*(p1[i]-p2[i]);
