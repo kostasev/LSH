@@ -64,11 +64,15 @@ value_point<int> hash_func::hash_value(data_point<int>& k,int &f,int size,int ta
             for (int i=0; i<k.point.size(); i++){
                 h+=this->v[j][i]*k.point[i];
             }
-            if (h>=0)
+            int coin=0;
+            if (h>=0){
+                coin=1;
                 point.point.push_back(1);
-            else
+            }
+            else{
                 point.point.push_back(0);
-            sum+= (int) pow(2.0,double(size-1-j));
+            }
+            sum+= (int) pow(2.0,double(size-1-j))*coin;
             h=0.0;
         }
         f=sum;

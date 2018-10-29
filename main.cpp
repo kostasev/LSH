@@ -155,7 +155,7 @@ int main(int argc, char** argv) {
             query_key=tables[i].query_item(query_set[k],table_sz,r);
             tables[i].get_bucket(query_set[k],query_key, bucks,r);
         }
-        range_nn(bucks,query_set[k],R,func_name);
+        //range_nn(bucks,query_set[k],R,func_name);
         t_nn=true_nn(query_set[k], data_set, num_lines,func_name);
         l_nn=a_nn(bucks,query_set[k],time,func_name);
         if ((l_nn/t_nn)>max_app){
