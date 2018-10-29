@@ -9,17 +9,17 @@
 #include "data_point.h"
 
 
-hash_func::hash_func(int dimension, int k){
-    std::mt19937 generator;
-    generator.default_seed;//(std::random_device()());
+hash_func::hash_func(int dimension, int k,std::mt19937 gen){
+    //std::mt19937 generator;
+    //generator.default_seed;//(std::random_device()());
     std::normal_distribution<double>         n_distribution(0.0,1.0);
     std::uniform_real_distribution<double>   uint_distW(0,const_lsh::w);
     std::vector<double> temp(dimension);
 
     for(int i=0 ; i < k ; i++ ) {
-        this->t.push_back(uint_distW(generator));
+        this->t.push_back(uint_distW(gen));
         for(int j=0 ; j < dimension ; j++ ){
-            temp[j]=n_distribution(generator);
+            temp[j]=n_distribution(gen);
         }
         v.push_back(temp);
     }

@@ -15,7 +15,7 @@ private:
     std::vector<std::vector<double>> v;
     std::vector<double> t;
 public:
-    hash_func(int,int);
+    hash_func(int,int,std::mt19937);
     ~hash_func();
     value_point<int> hash_value(data_point<int>&,int&,int,int,std::vector<int>);
 };

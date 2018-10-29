@@ -5,13 +5,13 @@
 #include "Hash_table.h"
 #include "Value.h"
 
-Hash_table::Hash_table( int buck, int dimension, int k, std::string func){
+Hash_table::Hash_table( int buck, int dimension, int k, std::string func, std::mt19937 gen){
     this->k=k;
     this->d=dimension;
     this->hash_tb.rehash(buck);
     this->hash_tb.max_load_factor(10000);
     //if (func == "euclidean") {
-        hfunc = new hash_func(dimension, k);
+        hfunc = new hash_func(dimension, k ,gen);
     //}
 }
 Hash_table::~Hash_table() {

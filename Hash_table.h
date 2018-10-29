@@ -20,7 +20,7 @@ private:
     hash_func *hfunc;
     std::unordered_multimap<Key,value_point<int>> hash_tb;
 public:
-    Hash_table(int, int, int, std::string);
+    Hash_table(int, int, int, std::string,std::mt19937);
     ~Hash_table();
     void add_item(data_point<int>&,int,std::vector<int>);
     void get_bucket(Key,std::map<std::string,value_point<int>>&);
