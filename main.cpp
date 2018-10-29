@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
     feed_data_set(input, data_set, d);
 
     std::mt19937 generator;
-    //generator.seed(std::random_device()());
+    generator.seed(std::random_device()());
     std::uniform_int_distribution<int>   int_dist(-20,20);
     vector<int> r;
     for (int i=0;i<k;i++){
@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
     vector <Hash_table> tables ;
 
     for (int i=0; i<L ; i++){
-        tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name));
+        tables.push_back(Hash_table(num_lines/const_lsh::table_size, d, k, func_name , generator));
     }
 
     for (int j=0;j<tables.size();j++) {

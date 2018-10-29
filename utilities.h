@@ -6,4 +6,5 @@
 #define UNTITLED_UTILITIES_H
 #include <iostream>
 int num_columns(std::string line);
+bool vectors_eq(vector<int> , vector<int>);
 #endif //UNTITLED_UTILITIES_H

@@ -4,6 +4,7 @@
 
 #include "Hash_table.h"
 #include "Value.h"
+#include "utilities.h"
 
 Hash_table::Hash_table( int buck, int dimension, int k, std::string func, std::mt19937 gen){
     this->k=k;
@@ -32,8 +33,11 @@ Key Hash_table::query_item(data_point<int>& k,int tb_size,std::vector<int> r){
 
 void Hash_table::get_bucket(Key k, std::map<std::string,value_point<int>>& mp){
     auto range=this->hash_tb.equal_range(k);
+    value_point<int> point = this->hfunc->hash_value(k,f.hash_val,this->k,tb_size,r);
     for(auto it = range.first; it != range.second ; it++ ){
-        mp.insert({it->second.p->name,it->second});
+        if (vectors_eq(it->second.point , point.point)){
+            mp.insert({it->second.p->name,it->second});
+        }
     }
 }
 
